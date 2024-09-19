@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    MONGO_URI = 'mongodb://mongodb:27017/auth-db'
+    MONGO_URI = 'mongodb://mongodb:27017/database'
     
     JWT_SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret')
     JWT_TOKEN_LOCATION = ['cookies']
