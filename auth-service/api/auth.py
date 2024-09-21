@@ -14,7 +14,6 @@ class Register(Resource):
         email = data['email']
         hashed_password = hash_password(data['password'])
         
-        # Додаємо нового користувача
         add_user(username, email, hashed_password)
         
         return {'message': 'User registered successfully'}, 201
@@ -34,7 +33,7 @@ class Login(Resource):
         
         access_token = create_access_token(identity=username)
         response = jsonify({'message': 'Logged in'})
-        response.set_cookie('access_token_cookie', access_token, httponly=True)
+        response.set_cookie('access_token_cookie', access_token, httponly=True, samesite='None')
         
         return response
             

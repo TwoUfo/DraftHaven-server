@@ -3,13 +3,16 @@ from flask_pymongo import PyMongo
 from werkzeug.local import LocalProxy
 
 
+mongo = PyMongo()
+
+def init_app(app):
+    mongo.init_app(app)  # Attach PyMongo to the Flask app
+
 def get_db():
-    db = getattr(g, "_database", None)
-
-    if db is None:
-        db = g._database = PyMongo(current_app).db
-
-    return db
+    # Use the initialized mongo instance
+    if 'db' not in g:
+        g.db = mongo.db
+    return g.db
 
 db = LocalProxy(get_db)
 
