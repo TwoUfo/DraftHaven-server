@@ -103,3 +103,6 @@ migrations/
 # Ignore specific system files
 *.swp
 *~
+
+# config
+*.conf
