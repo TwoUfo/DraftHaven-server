@@ -5,11 +5,10 @@ from werkzeug.local import LocalProxy
 
 mongo = PyMongo()
 
-def init_app(app):
-    mongo.init_app(app)  # Attach PyMongo to the Flask app
+def init_db(app):
+    mongo.init_app(app)  
 
 def get_db():
-    # Use the initialized mongo instance
     if 'db' not in g:
         g.db = mongo.db
     return g.db
@@ -18,8 +17,14 @@ db = LocalProxy(get_db)
 
 
 def add_user(username, email, password):
+    existing_user = db.users.find_one({'$or': [{'username': username}, {'email': email}]})
+    
+    if existing_user:
+        return "User with this username or email already exists", 409
+    
     user_doc = {'username': username, 'email': email, 'password': password}
-    return db.users.insert_one(user_doc)
+    db.users.insert_one(user_doc)
+    return {'message': 'User registered successfully'}, 201
 
 
 def find_user(username):

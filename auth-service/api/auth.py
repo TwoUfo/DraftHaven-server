@@ -14,9 +14,9 @@ class Register(Resource):
         email = data['email']
         hashed_password = hash_password(data['password'])
         
-        add_user(username, email, hashed_password)
-        
-        return {'message': 'User registered successfully'}, 201
+        response, status_code = add_user(username, email, hashed_password)
+
+        return response, status_code
     
 
 @api.route('/login')
@@ -31,10 +31,9 @@ class Login(Resource):
         if not document or not check_password(document['password'], password):
             return {'message': 'Incorrect username or password'}, 401
         
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity={'username': username, 'email': document['email']})
         response = jsonify({'message': 'Logged in'})
-        response.set_cookie('access_token_cookie', access_token, httponly=True, samesite='None')
-        
+        response.set_cookie('access_token_cookie', access_token, httponly=True)
         return response
             
 @api.route('/logout')

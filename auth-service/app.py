@@ -2,13 +2,13 @@ from flask import Flask
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from api.auth import api as auth_api
-from db import init_app
+from db import init_db
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
     
-    init_app(app)
+    init_db(app)
     
     jwt = JWTManager()  
     jwt.init_app(app)
