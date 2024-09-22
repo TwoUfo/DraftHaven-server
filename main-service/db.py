@@ -24,3 +24,11 @@ def get_user_profile(user):
         db.profiles.insert_one(user)
         return user
 
+def create_new_draft(draft_doc, user):
+    author = user['username']
+    draft_doc['author'] = author
+    return db.drafts.insert_one(draft_doc)
+
+def find_draft(title):
+    draft_doc = db.drafts.find_one({'title': title}, {'_id': 0})
+    return draft_doc
