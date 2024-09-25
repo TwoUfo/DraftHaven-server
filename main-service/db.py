@@ -32,3 +32,10 @@ def create_new_draft(draft_doc, user):
 def find_draft(title):
     draft_doc = db.drafts.find_one({'title': title}, {'_id': 0})
     return draft_doc
+
+def get_drafts():
+    drafts_doc = db.drafts.find({}, {'_id': 0})
+    return list(drafts_doc)
+        
+def update_draft(title, data):
+    db.drafts.update_one({'title': title}, {'$set': data})
