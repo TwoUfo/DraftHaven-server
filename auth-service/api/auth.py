@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 from .auth_utils import hash_password, check_password
+from .utils import expect
 from db import add_user, find_user
 
 api = Namespace('api', description='API operations')
@@ -10,36 +11,46 @@ api = Namespace('api', description='API operations')
 class Register(Resource):
     def post(self):
         data = request.get_json()
-        username = data['username']
-        email = data['email']
-        hashed_password = hash_password(data['password'])
-        
-        response, status_code = add_user(username, email, hashed_password)
+        try:
+            username = expect(data.get('username'), str, 'username')
+            email = expect(data.get('email'), str, 'email')
+            hashed_password = hash_password(expect(data.get('password'), str, 'password'))
+            
+            response, status_code = add_user(username, email, hashed_password)
 
-        return response, status_code
+            return response, status_code
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
     
 
 @api.route('/login')
 class Login(Resource):
     def post(self):
         data = request.get_json()
-        username = data['username']
-        password = data['password']
-        
-        document = find_user(username)
-        
-        if not document or not check_password(document['password'], password):
-            return {'message': 'Incorrect username or password'}, 401
-        
-        access_token = create_access_token(identity={'username': username, 'email': document['email']})
-        response = jsonify({'message': 'Logged in'})
-        response.set_cookie('access_token_cookie', access_token, httponly=True)
-        return response
+        try:
+            username = expect(data.get('username'), str, 'username')
+            password = expect(data.get('password'), str, 'password')
             
+            document = find_user(username)
+            
+            if not document or not check_password(document['password'], password):
+                return {'message': 'Incorrect username or password'}, 401
+            
+            access_token = create_access_token(identity={'username': username, 'email': document['email']})
+            response = jsonify({'message': 'Logged in'})
+            response.set_cookie('access_token_cookie', access_token, httponly=True)
+            return response
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+        
+        
 @api.route('/logout')
 class Logout(Resource):
     @jwt_required()
     def post(self):
-        response = jsonify({'message': 'Logged out'})
-        unset_jwt_cookies(response)
-        return response
+        try:
+            response = jsonify({'message': 'Logged out'})
+            unset_jwt_cookies(response)
+            return response
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400

@@ -24,9 +24,14 @@ def get_user_profile(user):
         db.profiles.insert_one(user)
         return user
 
-def create_new_draft(draft_doc, user):
+def create_new_draft(title, body, genre, user):
     author = user['username']
-    draft_doc['author'] = author
+    draft_doc = {
+        'title': title,
+        'body': body,
+        'genre': genre,
+        'author': author
+    }
     return db.drafts.insert_one(draft_doc)
 
 def find_draft(title):
@@ -36,6 +41,25 @@ def find_draft(title):
 def get_drafts():
     drafts_doc = db.drafts.find({}, {'_id': 0})
     return list(drafts_doc)
-        
-def update_draft(title, data):
-    db.drafts.update_one({'title': title}, {'$set': data})
+
+def check_author(username, title):
+    draft = find_draft(title)
+    author = draft.get('author')
+    
+    if author != username:
+        return None
+    return author
+    
+def update_draft(title, n_title, n_body, n_genre, username):
+    
+    # ADD AUTHOR CHECK
+     
+    response = db.drafts.update_one(
+        {'title': title}, 
+        {'$set': {
+            'title': n_title,
+            'body': n_body,
+            'genre': n_genre
+        }})
+    return response
+    
