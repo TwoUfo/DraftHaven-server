@@ -12,9 +12,15 @@ class Register(Resource):
     def post(self):
         data = request.get_json()
         try:
+            password_1 = expect(data.get('first-password'), str, 'first-password')
+            password_2 = expect(data.get('second-password'), str, 'second-password')
+            if password_1 != password_2:
+                return {'mismatch': 'passwords do not match'}, 401          
+            
             username = expect(data.get('username'), str, 'username')
             email = expect(data.get('email'), str, 'email')
-            hashed_password = hash_password(expect(data.get('password'), str, 'password'))
+            
+            hashed_password = hash_password(password_1)
             
             response, status_code = add_user(username, email, hashed_password)
 
