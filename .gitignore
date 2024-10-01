@@ -88,8 +88,6 @@ venv.bak/
 
 # Docker files
 *.db
-docker-compose.yml
-Dockerfile
 
 # Ignore database connection files or keys
 *.pem

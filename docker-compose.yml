@@ -1,0 +1,59 @@
+
+# ------- AUTH & AUTH-DB ------- #
+services:
+  auth-service:
+    image: drafthaven-server-auth-service:latest
+    build: ./auth-service 
+    ports:
+      - "5001:5000"
+    depends_on:
+      - auth-db
+    networks:
+      - auth-network
+      - shared-network 
+
+  auth-db:
+    image: mongo
+    container_name: auth-db
+    ports:
+      - "27017:27017" 
+    volumes:
+      - auth-data:/data/db 
+      - ./auth-service/mongod.conf:/etc/mongod.conf 
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+    networks:
+      - auth-network
+
+# ------- MAIN & MAIN-DB ------- #
+  main-service:
+    image: drafthaven-server-main-service:latest
+    build: ./main-service  
+    ports:
+      - "5002:5000" 
+    depends_on:
+      - main-db
+    networks:
+      - main-network
+      - shared-network 
+
+  main-db:
+    image: mongo
+    container_name: main-db
+    ports:
+      - "27018:27017" 
+    volumes:
+      - main-data:/data/db  
+      - ./main-service/mongod.conf:/etc/mongod.conf 
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+    networks:
+      - main-network
+
+volumes:
+  auth-data: {}
+  main-data: {}
+
+networks:
+  auth-network:
+  main-network:
+  shared-network:
+    driver: bridge
