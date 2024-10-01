@@ -5,7 +5,7 @@ from .auth_utils import hash_password, check_password
 from .utils import expect
 from db import add_user, find_user
 
-api = Namespace('api', description='API operations')
+api = Namespace('api', title='auth API')
 
 @api.route('/registration')
 class Register(Resource):

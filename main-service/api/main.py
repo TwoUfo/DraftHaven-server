@@ -28,6 +28,15 @@ class Profile(Resource):
         except Exception as e:
             return jsonify({'error': str(e)}), 400
         
+    @jwt_required()
+    def put(self):
+        try:
+            #UPDATE USER DATA
+            
+            pass
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+        
 
 @api.route('/drafts')
 class Drafts(Resource):

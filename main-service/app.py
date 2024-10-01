@@ -3,6 +3,7 @@ from flask_restx import Api
 from flask_jwt_extended import JWTManager
 from api.main import api as main_api
 from db import init_db
+from flask_cors import CORS
 
 def create_app():
     app = Flask(__name__)
@@ -15,5 +16,7 @@ def create_app():
 
     api = Api(app)
     api.add_namespace(main_api)
+
+    CORS(app, supports_credentials=True)
 
     return app
